@@ -122,7 +122,12 @@ class CGI #:nodoc:
        
           # Pull in the application controller to satisfy any dependencies on class definitions
           # of instances stored in the session.
-          Controllers.const_load!(:ApplicationController, "application") unless Controllers.const_defined?(:ApplicationController)
+          # Be sure to stay compatible with Rails 1.0/const_load!
+          if Object.const_defined?(:Controllers) and Controllers.respond_to?(:const_load!)
+            Controllers.const_load!(:ApplicationController, "application") unless Controllers.const_defined?(:ApplicationController)
+          else
+            require_dependency('application.rb') unless Object.const_defined?(:ApplicationController)
+          end
 
           # Assumes that @cookies has already been setup
           # Raises nomethod if upload_id is not defined
