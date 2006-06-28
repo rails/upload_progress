@@ -158,6 +158,13 @@ class CGI #:nodoc:
       end
       params 
     end
+    
+    # Required because of changes in [4388]
+    unless private_instance_methods.include?("read_params_from_query")
+      def read_params_from_query
+        read_params(:get,nil)
+      end
+    end
 
     # Prevent redefinition of aliases on multiple includes
     unless private_instance_methods.include?("read_multipart_without_progress")
